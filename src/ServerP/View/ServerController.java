@@ -1,22 +1,13 @@
 package ServerP.View;
 
 import ServerP.BL.ConectionClient;
-import ServerP.BL.Server;
-import ServerP.BL.User;
-import com.sun.org.apache.xpath.internal.SourceTree;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.ResourceBundle;
 
 /**
  * Created by clint on 20-02-2017.
@@ -67,58 +58,20 @@ public class ServerController implements Runnable {
             }
         }
 
-      /*  public void handleMessage(Socket socket) throws IOException {
-            DataInputStream input = new DataInputStream(socket.getInputStream());
-            DataOutputStream output = new DataOutputStream(socket.getOutputStream());
-            String msg = input.readUTF();
-            output.writeUTF("recieved " + msg);
-        }*/
 
-    void appendJoin(TextArea area, String newText) {
+   public void appendJoin(TextArea area, String newText) {
 
         area.setText(area.getText() + "\n" +  newText);
     }
-}
 
-   /* private void handleClientLogin () {
-        Socket socket = null;
-        try {
-            socket = serverSocket.accept();
-            DataInputStream input = new DataInputStream(socket.getInputStream());
-            DataOutputStream output = new DataOutputStream(socket.getOutputStream());
-            String chatName = input.readUTF();
-            for (User U :users) {
-                if (chatName == U.getName())
-                {
-                    output.writeUTF("J_EER");
-                }
-                else{
-                    output.writeUTF("J_OK");
-                }
-            }
-           // new Thread(new ConectionClient(socket)).start();
-            // String chatName = input.readUTF();
-            //User U = new User(chatName);
-            //users.add(U);
-           // output.writeUTF("Welcome, you are connected as " + chatName);
-            //users.add(new ConectionClient(socket, chatName));
-            //new Thread(users.get(users.size()-1)).start();
-
-
-        } catch (IOException ioEx) {
-            ioEx.printStackTrace();
+    public void checkForExistingUser()
+    {
+        for(int i = 0; i<userList.size(); i++) {
+            System.out.println(userList.get(i).getUserName());
         }
     }
+}
 
-  /*  public static void sendAll(String msg){
-        for(int i = 0; i < users.size(); i++){
-            try {
-                DataOutputStream output = new DataOutputStream(users.get(i).getSocket().getOutputStream());
-                output.writeUTF(msg);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }*/
+
 
 

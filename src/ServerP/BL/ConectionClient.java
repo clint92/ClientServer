@@ -5,19 +5,19 @@ import ServerP.View.ServerController;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.ServerSocket;
+
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Collection;
+
 
 /**
  * Created by clint on 20-02-2017.
  */
 public class ConectionClient extends Thread {
-    //static ArrayList<User> users = new ArrayList<>();
     private String userName;
     private Socket socket;
-    //private String msg;
+    private String returnMessage;
+    private String msg;
     private  DataInputStream input = null;
     private  DataOutputStream output = null;
 
@@ -28,11 +28,6 @@ public class ConectionClient extends Thread {
     @Override
     public void run() {
 
-
-        // String firstMessage = input.readUTF();
-        //Server.users.add(new User(socket,firstMessage));
-        //output.writeUTF("Welcome, you are connected as " + Server.users.get(Server.users.size()-1).getName());
-
         try {
             input = new DataInputStream(socket.getInputStream());
             output = new DataOutputStream(socket.getOutputStream());
@@ -40,11 +35,23 @@ public class ConectionClient extends Thread {
             e.printStackTrace();
         }
 
-        try {
-            String msg = input.readUTF();
-            userName = msg;
+       try {
+          // while(returnMessage.equals("J_ERR")) {
+               msg = input.readUTF();
+               userName = msg;
+               checkForUser(ServerController.userList, userName);
+               output.writeUTF(returnMessage);
+          // }
             while (!msg.equals("QUIT")) {
                // output.writeUTF("Recieved " + msg);
+                while(returnMessage.equals("J_ERR"))
+                {
+                    msg = input.readUTF();
+                    userName = msg;
+                    checkForUser(ServerController.userList, userName);
+                    output.writeUTF(returnMessage);
+
+                }
                 System.out.println(msg);
                 sendAll("From: " + userName + "\n" + msg);
                 msg = input.readUTF();
@@ -75,16 +82,6 @@ public class ConectionClient extends Thread {
     }
 
 
-    //output.writeUTF(message);
-    // sendAll(name + message);
-               /* output.println("Message " + numMessages
-                        + ": " + message);
-                message = input.nextLine();
-            }
-            output.println(numMessages
-                    + " messages received.");
-        }*/
-
     public Socket getSocket()
     {
         return socket;
@@ -93,6 +90,28 @@ public class ConectionClient extends Thread {
     {
         return userName;
     }
+
+    public void checkForUser(ArrayList<ConectionClient> list, String name)
+    {
+        if(list.size() <= 1)
+        {
+            returnMessage = "J_OK";
+        }
+        else {
+            for (int i = 0; i < list.size() - 1; i++) {
+                String nameInList = list.get(i).getUserName();
+                System.out.println(nameInList);
+                System.out.println(userName);
+                if (!name.equals(nameInList)) {
+                    returnMessage = "J_OK";
+                } else {
+                    returnMessage = "J_ERR";
+                    break;
+                }
+            }
+        }
+    }
+
     public static void sendAll(String msg) {
         for (int i = 0; i < ServerController.userList.size(); i++) {
             try {

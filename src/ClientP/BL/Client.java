@@ -10,6 +10,9 @@ import java.net.Socket;
 public class Client implements Runnable {
 
     static String name;
+    static boolean msgB = false;
+    boolean connectionB;
+    static String msg;
     String ip = "localhost";
     int port = 2001;
     static Socket socket = null;
@@ -24,37 +27,26 @@ public class Client implements Runnable {
     }
 
     public void startConnection() throws IOException {
-        socket = new Socket(ip, 2001);
+        socket = new Socket(ip,2001);
         input = new DataInputStream(socket.getInputStream());
         output = new DataOutputStream(socket.getOutputStream());
-        System.out.println(join());
+        //System.out.println(join());
     }
 
-    public void startConversation(String m) throws IOException {
-
-
-        //System.out.println(data(m));
-
-    }
-
-/*
-    @Override
-    public void run()  {
-        try {
-            socket = new Socket(ip, 2001);
-            input = new DataInputStream(socket.getInputStream());
-            output = new DataOutputStream(socket.getOutputStream());
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }*/
 
     public String join() throws IOException {
         output.writeUTF(name);// + name + ", " + ip + ":" + port);
         String serv = input.readUTF();
+        System.out.println(serv + "dddd");
+        if(serv.equals("J_OK"))
+        {
+            this.connectionB = true;
+        }
+        if(serv.equals("J_ERR"))
+        {
+            this.connectionB = false;
+        }
+
         return serv;
     }
 
@@ -72,55 +64,29 @@ public class Client implements Runnable {
     public void run() {
 
             try {
-                // startConnection();
-                String msg = recieveMessage();
+                 msg = recieveMessage();
                 while (!msg.equals("QUIT")){
                     msg = recieveMessage();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        try {
+            closeSocket();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    /*  Socket socket = new Socket("localhost", 2001);
-      DataInputStream input = new DataInputStream(socket.getInputStream());
-      DataOutputStream output = new DataOutputStream(socket.getOutputStream());
-      static String name;
-      String serv = null;
 
-      public Client() throws IOException {
-         /* new Thread(new Runnable() {
-              @Override
-              public void run() {
-              String msg;
-              while((msg = input.readUTF()) != null){
-                      try {
-                          serv = input.readUTF();
-                      } catch (IOException e) {
-                          e.printStackTrace();
-                      }
-                  }}
-
-          }).start();*/
-   /* }
-
-    public void writeMessageToServer(String message) throws IOException {
-
-        String msg = message;
-        output.writeUTF(msg);
-        //String servMessage = input.readUTF();
-        //System.out.println(servMessage);
-       // recieveMessage();
-     //   String servMessage = input.readUTF();
-       // System.out.println(servMessage)
-    }
-*/
     public String recieveMessage() throws IOException {
-        String msg = null;
+      //  String msg = null;
         //while (true) {
+
         try {
             msg = input.readUTF();
             System.out.println(msg);
+            msgB = true;
             return msg;
 
 
@@ -128,13 +94,26 @@ public class Client implements Runnable {
             e.printStackTrace();
         }return msg;
     }
-    // String serv = input.readUTF();
-   //System.out.println(serv);
+
 
     //////////////////////getters/////////////////////////
     public String getName()
     {
         return this.name;
+    }
+
+    public String getMsg()
+    {
+        return this.msg;
+    }
+
+    public Boolean getMsgB()
+    {
+        return this.msgB;
+    }
+    public boolean getConnectionB()
+    {
+        return this.connectionB;
     }
 
     //////////////////////Setters /////////////////////
@@ -150,6 +129,11 @@ public class Client implements Runnable {
     public String getServ()
     {
         return "";
+    }
+
+    public void setMsgBFalse()
+    {
+        this.msgB = false;
     }
 }
 

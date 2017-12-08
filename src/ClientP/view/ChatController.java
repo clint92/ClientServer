@@ -36,26 +36,72 @@ public class ChatController extends LoginController implements Initializable {
     public void sendMessage(ActionEvent actionEvent) throws IOException {
         String textToSend = message.getText();
         C.data(textToSend);
+            //        append(chatField,C.getMsg());
+
+
+
         /*String msgRecieved = C.data(textToSend);
         append(chatField, msgRecieved);*/
         message.clear();
+
 
         // C.writeMessageToServer(servMessage);
         //append(chatField,servMessage);
         //name = servMessage;
     }
 
-
-    void append(TextArea area, String newText) {
+    public void append(TextArea area, String newText) {
         // if(C.getServ() != null)
-        area.setText(area.getText() + "\n" + newText);
+        area.setText(area.getText() + "\n:" + newText);
 
+    }
+    public TextArea getChatfield()
+    {
+        return chatField;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         chatField.setText("Connected as " + C.getName());
-        new Thread(C).start();
+        Thread gettingMsg = new Thread(C);
+        gettingMsg.start();
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (gettingMsg.isAlive()) {
+                    Boolean temp = C.getMsgB();
+                    if(temp == true)
+                    {
+                        append(chatField,C.getMsg());
+                        C.setMsgBFalse();
+
+                    }
+
+                }
+            }
+        }).start();
+
+            /*public void run() {
+                while (gettingMsg.isAlive()) {
+                    try{
+                        String temp = null;
+                    if (temp != C.getMsg()) {
+                        append(chatField, C.getMsg());
+                        temp = C.getMsg();
+                    }
+                    } catch(IOException e){
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        }.start());*/
+
+
+
+
         //chatField.setText();
 
        /* new Thread(new Runnable() {
